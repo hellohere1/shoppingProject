@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head.ejs"); %>
+<body>
+    <%- include("../partials/header.ejs",{userid:id}) %>
+    <div  id="AddItemDiv">
+    <input type="text" id="itemName" placeholder="item" />
+    <input type="number" id="quanti" placeholder="quantity"/>
+    <button type="submit" onclick="addItem()">add Item</button>
+    </div>
+    <div id="listItems">
+    <h2> Shopping list:</h2>
+    <% shoppingLists.forEach((item) => { %>
+        <%- include("../partials/item.ejs",{item:item}); %>
+    <% });%>
+    </div>
+    <button type="button">purchase</button>
+    <script>
+        const userID=window.localStorage.getItem("userID");
+        console.log("inside the page");
+        const addItem=async ()=>{
+            const itemName=document.getElementById("itemName").value;
+            const quantity= document.getElementById("quanti").value;
+            const data={items:[{itemName, quantity:parseInt(quantity) , isBought :false}]};
+            console.log("the data: ",data)
+            const response = await fetch(`http://localhost:5050/addShopping/${userID}`, {
+                method:
+                    "POST",
+                body:
+                    JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const { result } = await response.json();
+            if(result){
+            console.log("the id", result);
+
+            const response3 = await fetch(`http://localhost:5050/users/addShopping/${userID}`, {
+                    method:
+                        "POST",
+                    body:
+                        JSON.stringify({ shopinglist :result}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+            const updated= await response3.json();
+            // if(updated){
+            //     await fetch(`http://localhost:5050/shoppingList/${userID}`, {
+            //         method:
+            //             "GET",
+            //         headers: {
+            //             "Content-Type": "application/json"
+            //         }
+            //     });
+            // }
+            
+            let itemList=document.getElementById("listItems");
+            itemList.innerHTML+=`<div class="itemDiv">
+    <p>Item Name: ${itemName}</p>
+    <p>Quantity:${quantity}</p>
+    <input type="checkbox" value='item${itemName}'  ${false ? "checked":''}   />
+</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

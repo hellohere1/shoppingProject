@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head.ejs"); %>
+<body>
+    <%- include("../partials/header.ejs") %>
+    <% history.forEach((item) => { %>
+        <%- include("../partials/item.ejs",{item:item, map:items}); %>
+    <% });%>
+    
+</body>
+</html>

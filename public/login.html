@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const onSubmit = async () => {
+            const name = document.getElementById('username').value, password = document.getElementById('pass').value;
+            const data = {name,password}
+            const response = await fetch("http://localhost:5050/log", {
+                method: 
+                    "POST",
+                body: 
+                    JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+                });
+            const {result} = await response.json();
+            if(result){
+                console.log('logged in');
+            }
+            else{
+                console.log('didnt log in')
+            }
+        }
+    </script>
+    <nav>
+        <!-- <a href="/login">for login page</a> -->
+        <a href="/">for index page</a>
+        <a href="/about">for about page</a>
+    </nav>
+    <h1>this is login page</h1>
+    <form>
+        <input type="text" placeholder="username" id="username"/>
+        <input type="password" placeholder="password" id = "pass"/> 
+    </form>
+    <button type="submit" onclick="onSubmit()">submit</button>
+</body>
+</html>

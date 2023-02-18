@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include("../partials/head.ejs"); %>
+<body>
+    <main>
+        <div>
+            <h3>log in:</h3>
+            <label for  = "name">user name: </label>
+            <input type="text" id="name">
+            <label for  = "password">user password: </label>
+            <input type="password" id="password">
+            <button type="submit" id="send" onclick="onSubmit()">submit</button>
+        </div>
+
+        <div>
+            <h3>sign in:</h3>
+            <label for="name">user email: </label>
+            <input type="text" id="signName">
+            <label for="password">user password: </label>
+            <input type="password" id="signPassword">
+            <button type="submit" id="sendSign" onclick="onSignIn()">submit</button>
+        </div>
+    </main>
+    <!-- <footer>
+        <%- include("../partials/footer.ejs") %>
+    </footer> -->
+    <script>
+        const checkUserExist = () => {
+            const preUser = localStorage.getItem("userId");
+            console.log("the user exist in the local");
+            if (preUser) window.location.replace(`http://localhost:5050/shoppingList/${preUser}`)
+        }
+        checkUserExist();
+        const onSubmit = async () => {
+            const username = document.getElementById('name').value
+            const password = document.getElementById('password').value;
+            const data = { email: username, password }
+            console.log("the data: ", data);
+
+            const response = await fetch("http://localhost:5050/login", {
+                method:
+                    "POST",
+                body:
+                    JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const { result } = await response.json();
+            if (result) {
+                localStorage.setItem("userID", result);
+                window.location.replace(`http://localhost:5050/shoppingList/${result}`);
+            }
+            else {
+                console.log("didn't work");
+            }
+            
+        }
+        const onSignIn =async ()=>{
+            //sign up
+            const email = document.getElementById('signName').value
+            const password = document.getElementById('signPassword').value;
+            const user = { name:email, email, password };
+            console.log("the data: ", user);
+            const response2 = await fetch("http://localhost:5050/users", {
+                method:
+                    "POST",
+                body:JSON.stringify(user),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const result2 = await response2.json();
+            console.log(result2)
+            if(result){
+                window.location.replace(`http://localhost:5050/shoppingList/${result2}`); //should fetch to render and not switching url
+            }
+            else{
+                console.log('didnt log in')
+            }
+        }
+    </script>
+</body>
+</html>
