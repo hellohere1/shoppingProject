@@ -3,6 +3,7 @@
     <%- include("../partials/head.ejs"); %>
 <body>
     <%- include("../partials/header.ejs",{userid:id}) %>
+    <button type="submit" onclick="createNewList()">create new shopping list</button>
     <div  id="AddItemDiv">
     <input type="text" id="itemName" placeholder="item" />
     <input type="number" id="quanti" placeholder="quantity"/>
@@ -14,16 +15,24 @@
         <%- include("../partials/item.ejs",{item:item}); %>
     <% });%>
     </div>
-    <button type="button">purchase</button>
+    <button type="button" onclick="finish()">move to history</button>
     <script>
         const userID=window.localStorage.getItem("userID");
-        console.log("inside the page");
+        let listID= window.localStorage.getItem("listID");
+        const createNewList=async()=>{
+            const itemName = document.getElementById("itemName").value;
+            const quantity = document.getElementById("quanti").value;
+            const data = { items: [{ itemName, quantity: parseInt(quantity), isBought: false }] };
+            const updated = await postnewlist(data);
+            if (updated) {
+               window.location.replace(`http://localhost:5050/shoppingList/${userID}`);
+            }
+        }
         const addItem=async ()=>{
-            const itemName=document.getElementById("itemName").value;
-            const quantity= document.getElementById("quanti").value;
-            const data={items:[{itemName, quantity:parseInt(quantity) , isBought :false}]};
-            console.log("the data: ",data)
-            const response = await fetch(`http://localhost:5050/addShopping/${userID}`, {
+            const itemName = document.getElementById("itemName").value;
+            const quantity = document.getElementById("quanti").value;
+            const data={id:listID,item: { itemName, quantity: parseInt(quantity), isBought: false } }
+            const response = await fetch(`http://localhost:5050/additem/${userID}`, {
                 method:
                     "POST",
                 body:
@@ -34,35 +43,56 @@
             });
             const { result } = await response.json();
             if(result){
-            console.log("the id", result);
+                window.location.replace(`http://localhost:5050/shoppingList/${userID}`);
+            }
 
-            const response3 = await fetch(`http://localhost:5050/users/addShopping/${userID}`, {
+        }
+        const finish=async ()=>{
+            let listID = window.localStorage.getItem("listID");
+           const itemList= document.getElementsByClassName("itemDiv"); 
+           const data={id: listID,itemID:"item", isBought:true};
+           console.log("the data: ",data);
+           const response = await fetch(`http://localhost:5050/updateBought/${userID}`, {
+                method:
+                    "POST",
+                body:
+                    JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const responseJson=await response.json();
+            if(responseJson)
+            {
+                console.log("success", responseJson);
+            }
+        };
+        const postnewlist = async (data) => {
+                const response = await fetch(`http://localhost:5050/newShopping/${userID}`, {
                     method:
                         "POST",
                     body:
-                        JSON.stringify({ shopinglist :result}),
+                        JSON.stringify(data),
                     headers: {
                         "Content-Type": "application/json"
                     }
                 });
-            const updated= await response3.json();
-            // if(updated){
-            //     await fetch(`http://localhost:5050/shoppingList/${userID}`, {
-            //         method:
-            //             "GET",
-            //         headers: {
-            //             "Content-Type": "application/json"
-            //         }
-            //     });
-            // }
-            
-            let itemList=document.getElementById("listItems");
-            itemList.innerHTML+=`<div class="itemDiv">
-    <p>Item Name: ${itemName}</p>
-    <p>Quantity:${quantity}</p>
-    <input type="checkbox" value='item${itemName}'  ${false ? "checked":''}   />
-</div>`;
-            }
+                const { result } = await response.json();
+                if (result) {
+                    console.log("inside the if to the if to add to user");
+                    await localStorage.setItem("listID", result);
+                const response2 = await fetch(`http://localhost:5050/users/addShopping/${userID}`, {
+                    method:
+                        "POST",
+                    body:
+                        JSON.stringify({ shopinglist: result }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const result2=await response2.json();
+                return result2;
+            };
         }
     </script>
 </body>

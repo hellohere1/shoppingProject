@@ -13,7 +13,7 @@ router.get("/shoppingList/:id", async (req, res) => {
     let shoppingListUser;
     user?.shoppingLists.length > 0
       ? (shoppingListUser = await getShoppingList({
-          id: user.shoppingLists[0],
+          id: user.shoppingLists[user.shoppingLists.length - 1],
         }))
       : (shoppingListUser = null);
     user?.shoppingLists.length > 0

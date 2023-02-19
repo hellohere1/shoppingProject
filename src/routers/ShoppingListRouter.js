@@ -2,16 +2,16 @@ const express = require("express");
 const { getUser } = require("../controllers/userControllers");
 const {
   getShoppingList,
+  createShoppingList,
   addToShoppingList,
+  updateBought,
 } = require("../controllers/ShoppigListControllers");
 const router = new express.Router();
 const ShoppingList = require("../models/ShoppingList");
 
-router.post("/addShopping/:id", async ({ body }, res) => {
+router.post("/newShopping/:id", async ({ body }, res) => {
   try {
-    console.log("the data: ", body.items);
     const Shopinglist = new ShoppingList(body);
-    // console.log(Shopinglist);
     const tryi = await Shopinglist.save().then(
       console.log("the shopping list was saved")
     );
@@ -24,6 +24,21 @@ router.post("/addShopping/:id", async ({ body }, res) => {
   }
 });
 
-router.post("/additem/:id", async ({ body }, res) => {});
+router.post("/additem/:id", async ({ body }, res) => {
+  try {
+    const result = await addToShoppingList(body);
+    if (result) res.send({ result });
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+router.post("/updateBought/:id", async ({ body }, res) => {
+  try {
+    await updateBought(body);
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 module.exports = router;

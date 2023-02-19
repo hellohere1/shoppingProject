@@ -1,4 +1,5 @@
 const { ObjectID } = require("mongodb");
+const { Mongoose } = require("mongoose");
 const User = require("../models/Users");
 
 const getUser = async ({ id }) => {
@@ -10,10 +11,13 @@ const getUser = async ({ id }) => {
 };
 const addList = async ({ id, listId }) => {
   try {
-    return await User.findByIdAndUpdate(
+    let userList = await getUser({ id });
+    console.log("the userlist: ", userList.shoppingLists);
+    const response = await User.findByIdAndUpdate(
       { _id: id },
-      { shoppingLists: [listId] }
+      { shoppingLists: [...userList.shoppingLists, listId] }
     );
+    if (response) return response;
   } catch (err) {
     return err;
   }

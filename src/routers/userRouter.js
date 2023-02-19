@@ -25,13 +25,12 @@ router.get("/users/:id", async (req, res) => {
 router.post("/users/addShopping/:id", async (req, res) => {
   try {
     const user = await getUser({ id: req.params.id });
-    console.log("what  try to get in-", req.body.shopinglist);
     const updateresult = await addList({
       id: req.params.id,
       listId: req.body.shopinglist,
     });
-    console.log("the result of update: ", updateresult);
-    res.send(updateresult);
+    console.log("the update: ", updateresult);
+    if (updateresult) res.send(updateresult);
   } catch (err) {
     res.send(err);
   }
