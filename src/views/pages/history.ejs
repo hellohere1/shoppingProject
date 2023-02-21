@@ -2,10 +2,16 @@
 <html lang="en">
     <%- include("../partials/head.ejs"); %>
 <body>
-    <%- include("../partials/header.ejs") %>
-    <% history.forEach((item) => { %>
-        <%- include("../partials/item.ejs",{item:item, map:items}); %>
-    <% });%>
-    
+    <%- include("../partials/header.ejs",{userid:id}) %>
+    <% idList.forEach((item) => { %>
+            <%- console.log("the item",item); %>
+        <% });%>
+    <script>
+        let listID = JSON.parse('<%- JSON.stringify(idList) %>');
+        listID.map((item)=>{
+            console.log("the item here:",item);
+        });
+        console.log("the lists: ", listID);
+    </script>
 </body>
 </html>

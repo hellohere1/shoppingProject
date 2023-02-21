@@ -35,7 +35,7 @@ router.post("/additem/:id", async ({ body }, res) => {
 
 router.post("/updateBought/:id", async ({ body }, res) => {
   try {
-    await updateBought(body);
+    return await updateBought(body);
   } catch (err) {
     res.send(err);
   }

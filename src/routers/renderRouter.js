@@ -20,26 +20,25 @@ router.get("/shoppingList/:id", async (req, res) => {
       ? res.render("pages/shoppingList", {
           shoppingLists: shoppingListUser.items,
           id: req.params.id,
+          listID: shoppingListUser._id,
         })
       : res.render("pages/shoppingList", {
           shoppingLists: [],
           id: req.params.id,
+          listID: null,
         });
   } catch (e) {
     res.send(e);
   }
 });
 
-router.get("/history/:id", (req, res) => {
-  res.render("pages/history", { history, items });
+router.get("/history/:id", async (req, res) => {
+  const user = await getUser({ id: req.params.id });
+  let listOfLists = [];
+  await user.shoppingLists.map(async (item) => {
+    listOfLists.push(item);
+  });
+  res.render("pages/history", { id: req.params.id, idList: listOfLists });
 });
-
-// router.post("/login", async ({ body }, res) => {
-//   const result = body.username === "admin" && body.password === "admin";
-//   const response = {
-//     result,
-//   };
-//   res.send(response);
-// });
 
 module.exports = router;

@@ -14,11 +14,15 @@
     <% shoppingLists.forEach((item) => { %>
         <%- include("../partials/item.ejs",{item:item}); %>
     <% });%>
+    <% if (listID) { var listIdOfUser=listID; %>
+    <p><% listID } %></p>
     </div>
-    <button type="button" onclick="finish()">move to history</button>
+    <button type="button" onclick="finish()">update partners</button>
+    <button type="button" onclick="toHistory()">move list to history</button>
     <script>
         const userID=window.localStorage.getItem("userID");
-        let listID= window.localStorage.getItem("listID");
+        let listID = JSON.parse('<%- JSON.stringify(listIdOfUser) %>');
+        window.localStorage.setItem("listID",listID);
         const createNewList=async()=>{
             const itemName = document.getElementById("itemName").value;
             const quantity = document.getElementById("quanti").value;
@@ -49,14 +53,20 @@
         }
         const finish=async ()=>{
             let listID = window.localStorage.getItem("listID");
-           const itemList= document.getElementsByClassName("itemDiv"); 
+           const itemList= document.getElementsByClassName("checkedbox"); 
+           let updateData=[];
+           for(let i=0;i<itemList.length; i++)
+           {
+            updateData=[...updateData,{ id: listID, itemID: itemList[i].value , isBought: itemList[i].checked }]
+           }
+           console.log("the update: ",updateData)
            const data={id: listID,itemID:"item", isBought:true};
            console.log("the data: ",data);
            const response = await fetch(`http://localhost:5050/updateBought/${userID}`, {
                 method:
                     "POST",
                 body:
-                    JSON.stringify(data),
+                    JSON.stringify(updateData),
                 headers: {
                     "Content-Type": "application/json"
                 }
@@ -93,6 +103,9 @@
                 const result2=await response2.json();
                 return result2;
             };
+        }
+        const toHistory= async()=>{
+            window.location.replace(`http://localhost:5050/history/${userID}`);
         }
     </script>
 </body>

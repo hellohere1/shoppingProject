@@ -1,4 +1,5 @@
 const ShoppingLists = require("../models/ShoppingList");
+const { Mongoose } = require("mongoose");
 
 const getShoppingList = async ({ id }) => {
   try {
@@ -23,24 +24,40 @@ const addToShoppingList = async ({ id, item }) => {
     return err;
   }
 };
-
-const updateBought = async ({ id, itemID, isBought }) => {
-  let shopList = await getShoppingList({ id });
-  // const result = shopList.updateOne({ itemName: itemID }, { isBought });
-  // console.log("the result of the upate to is bought: ", result);
-  const shoppingList = await ShoppingLists.findById(id);
-  console.log("the shopping list", shoppingList);
-  shoppingList.items.map((item) => {
-    if (item.itemName == itemID) {
-      item.isBought = isBought;
+const updateBought = async (items) => {
+  try {
+    if (Array.isArray(items)) {
+      items.map(async ({ id, itemID, isBought }) => {
+        const shoppingList = await ShoppingLists.findById(id);
+        console.log("the shopping list", shoppingList);
+        await shoppingList.items.map((item) => {
+          if (item.itemName == itemID) {
+            item.isBought = isBought;
+          }
+        });
+        console.log("the shoppingList now", shoppingList);
+        const resp = await shoppingList.save().then("the success is big?");
+        return resp;
+      });
     }
-  });
-  const thethingIdidntwant = await ShoppingLists.findByIdAndUpdate(
-    { id },
-    { items: [shoppingList.items] }
-  );
-  console.log("the response of the uodate: ", thethingIdidntwant);
+  } catch (err) {
+    return err;
+  }
 };
+
+// const updateBought = async ({ id, itemID, isBought }) => {
+//   let shopList = await getShoppingList({ id });
+//   const shoppingList = await ShoppingLists.findById(id);
+//   console.log("the shopping list", shoppingList);
+//   await shoppingList.items.map((item) => {
+//     if (item.itemName == itemID) {
+//       item.isBought = isBought;
+//     }
+//   });
+//   console.log("the shoppingList now", shoppingList);
+//   const resp = await shoppingList.save().then("the success is big?");
+//   return resp;
+// };
 
 const createShoppingList = async ({ itemName, quantity, isBought, id }) => {
   try {
