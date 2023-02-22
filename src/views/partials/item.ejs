@@ -1,4 +1,5 @@
 <div class="itemDiv">
+    <% console.log("inside the item ejs",item.itemName); %>
     <p>Item Name: <%= item.itemName  %></p>
     <p>Quantity:<%= item.quantity  %></p>
     <input type="checkbox" class="checkedbox"  value=<%=item.itemName%> <%= item.isBought ? "checked" : ''%> />

@@ -3,15 +3,33 @@
     <%- include("../partials/head.ejs"); %>
 <body>
     <%- include("../partials/header.ejs",{userid:id}) %>
-    <% idList.forEach((item) => { %>
-            <%- console.log("the item",item); %>
-        <% });%>
+    <div id="holdItAll">
+
+    </div>
     <script>
         let listID = JSON.parse('<%- JSON.stringify(idList) %>');
-        listID.map((item)=>{
-            console.log("the item here:",item);
+        let divToAdd=document.getElementById("holdItAll");
+        let count=1;
+        listID.forEach(async (item)=>{
+           let response = await fetch(`http://localhost:5050/getList/${item}`, {
+                method: "GET", headers: { "Content-Type": "application/json" }
+            });
+            const { result } = await response.json();
+            if (result) {
+                divToAdd.innerHTML+=`<h3>list number: ${count++}</h3>`
+                result.items.forEach((itemInside) => {
+                    divToAdd.innerHTML+=`<div class="itemDiv">
+                    <p>----</p>
+                    <p>Item Name: ${itemInside.itemName} </p>
+                    <p>Quantity:${itemInside.quantity }</p>`;
+                    let theBouht="";
+                    itemInside.isBought ? theBouht = 'checked' : '';
+                    divToAdd.innerHTML+=` <input type="checkbox" class="checkedbox"  value='${itemInside.itemName}' ${theBouht} />
+                    </div>`;
+                 });
+             }
+             divToAdd.innerHTML+="<p>------------------------</p>";
         });
-        console.log("the lists: ", listID);
     </script>
 </body>
 </html>

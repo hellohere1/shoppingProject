@@ -1,9 +1,11 @@
 const ShoppingLists = require("../models/ShoppingList");
 const { Mongoose } = require("mongoose");
+const { ObjectID } = require("mongodb");
 
 const getShoppingList = async ({ id }) => {
   try {
-    return await ShoppingLists.findById(id);
+    const shopping = await ShoppingLists.findById(id);
+    return shopping;
   } catch (e) {
     return e;
   }

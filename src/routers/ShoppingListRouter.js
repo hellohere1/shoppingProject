@@ -41,4 +41,13 @@ router.post("/updateBought/:id", async ({ body }, res) => {
   }
 });
 
+router.get("/getList/:id", async (req, res) => {
+  try {
+    const theList = await getShoppingList({ id: req.params.id });
+    res.send({ result: theList });
+  } catch (err) {
+    res.send(err);
+  }
+});
+
 module.exports = router;
