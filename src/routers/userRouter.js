@@ -5,9 +5,8 @@ const User = require("../models/Users");
 
 router.post("/users", async ({ body }, res) => {
   try {
-    console.log("the user", body);
     const user = new User(body);
-    await user.save().then(console.log("saved user"));
+    await user.save().then(res.send({ result: user }));
   } catch (e) {
     console.log(e);
   }

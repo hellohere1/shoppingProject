@@ -15,10 +15,12 @@ router.post("/newShopping/:id", async ({ body }, res) => {
     const tryi = await Shopinglist.save().then(
       console.log("the shopping list was saved")
     );
-    await Shopinglist.updateOne({ itmes: body.items }).then(
-      console.log("the list was updated")
-    );
-    res.send({ result: tryi._id });
+    if (body.items) {
+      await Shopinglist.updateOne({ itmes: body.items }).then(
+        console.log("the list was updated")
+      );
+    }
+    res.send({ shopResult: tryi._id });
   } catch (err) {
     res.send(err);
   }
@@ -26,7 +28,9 @@ router.post("/newShopping/:id", async ({ body }, res) => {
 
 router.post("/additem/:id", async ({ body }, res) => {
   try {
-    const result = await addToShoppingList(body);
+    console.log("the bosy : ", body);
+    const result = await addToShoppingList(body); //id: , item:
+    console.log("the item was added: ", result);
     if (result) res.send({ result });
   } catch (err) {
     res.send(err);

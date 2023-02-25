@@ -21,9 +21,6 @@
             <button type="submit" id="sendSign" onclick="onSignIn()">submit</button>
         </div>
     </main>
-    <!-- <footer>
-        <%- include("../partials/footer.ejs") %>
-    </footer> -->
     <script>
         const checkUserExist = () => {
             const preUser = localStorage.getItem("userId");
@@ -60,8 +57,8 @@
             //sign up
             const email = document.getElementById('signName').value
             const password = document.getElementById('signPassword').value;
+            if(email && password){
             const user = { name:email, email, password };
-            console.log("the data: ", user);
             const response2 = await fetch("http://localhost:5050/users", {
                 method:
                     "POST",
@@ -70,15 +67,50 @@
                     "Content-Type": "application/json"
                 }
             });
-            const result2 = await response2.json();
-            console.log(result2)
+            const {result} = await response2.json();
             if(result){
-                window.location.replace(`http://localhost:5050/shoppingList/${result2}`); 
+                const answer= await addListToUser(result._id);
+                if(answer){
+                window.location.replace(`http://localhost:5050/shoppingList/${result._id}`); 
+                }
             }
             else{
                 console.log('didnt log in')
             }
         }
+        else{
+            alert("you need to write the name and password");
+        }
+        }
+
+    const addListToUser= async (userId)=>{
+        const data = {};
+        const response = await fetch(`http://localhost:5050/newShopping/${userId}`, {
+            method:
+                "POST",
+            body:
+                JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        const { shopResult } = await response.json();
+        if (shopResult) {
+            console.log("inside the if to the if to add to user");
+            await localStorage.setItem("listID", shopResult);
+            const response2 = await fetch(`http://localhost:5050/users/addShopping/${userId}`, {
+                method:
+                    "POST",
+                body:
+                    JSON.stringify({ shopinglist: shopResult }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const result2 = await response2.json();
+            return result2;
+        }
+    }
     </script>
 </body>
 </html>

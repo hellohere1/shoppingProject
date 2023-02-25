@@ -5,6 +5,7 @@ const { ObjectID } = require("mongodb");
 const getShoppingList = async ({ id }) => {
   try {
     const shopping = await ShoppingLists.findById(id);
+    console.log("inside the get: ", shopping);
     return shopping;
   } catch (e) {
     return e;

@@ -14,27 +14,35 @@
     <% shoppingLists.forEach((item) => { %>
         <%- include("../partials/item.ejs",{item:item}); %>
     <% });%>
-    <% if (listID) { var listIdOfUser=listID; %>
-    <p><% listID } %></p>
+    <% if (listID) { var listIdOfUser=listID;} %>
     </div>
     <button type="button" onclick="finish()">update partners</button>
     <button type="button" onclick="toHistory()">move list to history</button>
     <script>
         const userID=window.localStorage.getItem("userID");
         let listID = JSON.parse('<%- JSON.stringify(listIdOfUser) %>');
-        window.localStorage.setItem("listID",listID);
+        if(listID)
+        {
+            window.localStorage.setItem("listID",listID);
+        }
         const createNewList=async()=>{
             const itemName = document.getElementById("itemName").value;
             const quantity = document.getElementById("quanti").value;
+            if(itemName && quantity){
             const data = { items: [{ itemName, quantity: parseInt(quantity), isBought: false }] };
             const updated = await postnewlist(data);
             if (updated) {
                window.location.replace(`http://localhost:5050/shoppingList/${userID}`);
             }
         }
+        else{
+            alert("you have to add a new item to new list");
+        }
+        }
         const addItem=async ()=>{
             const itemName = document.getElementById("itemName").value;
             const quantity = document.getElementById("quanti").value;
+            if(itemName && quantity){
             const data={id:listID,item: { itemName, quantity: parseInt(quantity), isBought: false } }
             const response = await fetch(`http://localhost:5050/additem/${userID}`, {
                 method:
@@ -49,6 +57,10 @@
             if(result){
                 window.location.replace(`http://localhost:5050/shoppingList/${userID}`);
             }
+        }
+        else{
+            alert("you needto fill in the details");
+        }
 
         }
         const finish=async ()=>{
@@ -87,15 +99,15 @@
                         "Content-Type": "application/json"
                     }
                 });
-                const { result } = await response.json();
-                if (result) {
+                const { shopResult } = await response.json();
+                if (shopResult) {
                     console.log("inside the if to the if to add to user");
-                    await localStorage.setItem("listID", result);
+                    await localStorage.setItem("listID", shopResult);
                 const response2 = await fetch(`http://localhost:5050/users/addShopping/${userID}`, {
                     method:
                         "POST",
                     body:
-                        JSON.stringify({ shopinglist: result }),
+                        JSON.stringify({ shopinglist: shopResult }),
                     headers: {
                         "Content-Type": "application/json"
                     }
