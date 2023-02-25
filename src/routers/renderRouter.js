@@ -11,11 +11,13 @@ router.get("/shoppingList/:id", async (req, res) => {
   try {
     const user = await getUser({ id: req.params.id });
     let shoppingListUser;
+    console.log("the user in the shooping list:", user.shoppingLists.length);
     user?.shoppingLists.length > 0
       ? (shoppingListUser = await getShoppingList({
           id: user.shoppingLists[user.shoppingLists.length - 1],
         }))
       : (shoppingListUser = null);
+    console.log("the shoppinglist of the user", shoppingListUser);
     user?.shoppingLists.length > 0
       ? res.render("pages/shoppingList", {
           shoppingLists: shoppingListUser.items,
