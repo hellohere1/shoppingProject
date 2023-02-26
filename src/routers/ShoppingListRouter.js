@@ -5,6 +5,7 @@ const {
   createShoppingList,
   addToShoppingList,
   updateBought,
+  deleteItem,
 } = require("../controllers/ShoppigListControllers");
 const router = new express.Router();
 const ShoppingList = require("../models/ShoppingList");
@@ -31,6 +32,16 @@ router.post("/additem/:id", async ({ body }, res) => {
     console.log("the bosy : ", body);
     const result = await addToShoppingList(body); //id: , item:
     console.log("the item was added: ", result);
+    if (result) res.send({ result });
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+router.post("/deleteitem", async ({ body }, res) => {
+  try {
+    console.log("the body: ", body);
+    const result = await deleteItem(body);
     if (result) res.send({ result });
   } catch (err) {
     res.send(err);

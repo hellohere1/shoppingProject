@@ -9,6 +9,10 @@
     <input type="number" id="quanti" placeholder="quantity"/>
     <button type="submit" onclick="addItem()">add Item</button>
     </div>
+    <div>
+        <input type="text" id="partnerName" placeholder="Avi" />
+        <button onclick="addPartner()">add partner</button>
+    </div>
     <div id="listItems">
     <h2> Shopping list:</h2>
     <% shoppingLists.forEach((item) => { %>
@@ -119,6 +123,44 @@
         const toHistory= async()=>{
             window.location.replace(`http://localhost:5050/history/${userID}`);
         }
+
+        const deleteTheItem=async (itemId)=>{
+            const data= {listId: listID , itemId: itemId};
+            const response = await fetch(`http://localhost:5050/deleteitem`, {
+                method:
+                    "POST",
+                body:
+                    JSON.stringify(data),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            const { result } = await response.json();
+            if (result) {
+                window.location.replace(`http://localhost:5050/shoppingList/${userID}`);
+            }
+        };
+        const addPartner= async()=>{
+            let partner=document.getElementById("partnerName").value;
+            if(partner)
+            {
+                const data={id: userID, partnerId: partner };
+                console.log("partner name: ",partner);
+                const response = await fetch(`http://localhost:5050/addPartner/:${userID}`, {
+                    method:
+                        "POST",
+                    body:
+                        JSON.stringify(data),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const { result } = await response.json();
+            }
+            else{
+                alert("toy need to add a name");
+            }
+        };
     </script>
 </body>
 </html>

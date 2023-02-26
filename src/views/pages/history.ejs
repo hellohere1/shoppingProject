@@ -9,6 +9,8 @@
     <script>
         let listID = JSON.parse('<%- JSON.stringify(idList) %>');
         let divToAdd=document.getElementById("holdItAll");
+        let currentList=window.localStorage.getItem("listID");
+        let currentUser= window.localStorage.getItem("userID");
         let count=1;
         listID.forEach(async (item)=>{
            let response = await fetch(`http://localhost:5050/getList/${item}`, {
@@ -18,7 +20,7 @@
             if (result) {
                 divToAdd.innerHTML+=`<h3>list number: ${count++}</h3>`
                 result.items.forEach((itemInside) => {
-                    divToAdd.innerHTML+=`<div class="itemDiv">
+                    divToAdd.innerHTML+=`<div class="itemDiv style="width: 50%; float:left"">
                     <p>----</p>
                     <p>Item Name: ${itemInside.itemName} </p>
                     <p>Quantity:${itemInside.quantity }</p>`;
@@ -26,10 +28,45 @@
                     itemInside.isBought ? theBouht = 'checked' : '';
                     divToAdd.innerHTML+=` <input type="checkbox" class="checkedbox"  value='${itemInside.itemName}' ${theBouht} />
                     </div>`;
+                    const data={listId:item,id: itemInside._id }
+                    
+                    divToAdd.innerHTML+=`<div style="width: 50%; float:right">
+                        <button type="submit" id="${itemInside._id}" value="${item}" onclick="addItem(this.value,this.id)">add Item</button>
+                        </div>`
                  });
              }
              divToAdd.innerHTML+="<p>------------------------</p>";
         });
+        const addItem = async (listId,itemId) => {
+            let response = await fetch(`http://localhost:5050/getList/${listId}`, {
+                method: "GET", headers: { "Content-Type": "application/json" }
+            });
+            const { result } = await response.json();
+            if(result)
+            {
+                result.items.forEach(async(tempItem)=>{
+                    if(tempItem._id == itemId)
+                    {
+                        const data = { id: currentList, item: { itemName: tempItem.itemName, quantity: parseInt(tempItem.quantity), isBought: tempItem.isBought } };
+                        console.log("the data: ",data);
+                        const response = await fetch(`http://localhost:5050/additem/${currentUser}`, {
+                            method:
+                                "POST",
+                            body:
+                                JSON.stringify(data),
+                            headers: {
+                                "Content-Type": "application/json"
+                            }
+                        });
+                        const { result } = await response.json();
+                        if(result)
+                        alert("added to current list");
+                    }
+                })
+            }
+
+            }
+
     </script>
 </body>
 </html>

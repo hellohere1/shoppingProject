@@ -12,7 +12,6 @@ const getUser = async ({ id }) => {
 const addList = async ({ id, listId }) => {
   try {
     let userList = await getUser({ id });
-    console.log("the userlist: ", userList.shoppingLists);
     const response = await User.findByIdAndUpdate(
       { _id: id },
       { shoppingLists: [...userList.shoppingLists, listId] }
@@ -23,7 +22,28 @@ const addList = async ({ id, listId }) => {
   }
 };
 
+const addPartner = async ({ id, partnerId }) => {
+  try {
+    let user = await getUser({ id });
+    console.log("the idd", id);
+    let partner = await User.findOne({ name: partnerId }).then(
+      console.log("found")
+    );
+    console.log("the partner: ", user);
+    if (partner) {
+      const response = await User.findByIdAndUpdate(
+        { _id: id },
+        { partners: [...user.partners, partner._id] }
+      );
+      if (response) return response;
+      else return null;
+    }
+  } catch (err) {
+    return err;
+  }
+};
 module.exports = {
   getUser,
   addList,
+  addPartner,
 };

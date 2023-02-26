@@ -1,5 +1,9 @@
 const express = require("express");
-const { getUser, addList } = require("../controllers/userControllers");
+const {
+  getUser,
+  addList,
+  addPartner,
+} = require("../controllers/userControllers");
 const router = new express.Router();
 const User = require("../models/Users");
 
@@ -65,6 +69,19 @@ router.post("/login", async ({ body }, res) => {
     }
   } catch (e) {
     console.error(e);
+  }
+});
+
+router.post("/addPartner/:id", async (req, res) => {
+  try {
+    const user = await getUser({ id: req.params.id });
+    const result = await addPartner({
+      id: req.params.id.slice(1),
+      partnerId: req.body.partnerId,
+    });
+    res.send({ result });
+  } catch (err) {
+    res.send(err);
   }
 });
 
